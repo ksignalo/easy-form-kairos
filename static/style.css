@@ -1,0 +1,219 @@
+:root {
+  --bg: #f5f7fa;
+  --card: #ffffff;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --accent: #0f766e;
+  --accent-dark: #115e59;
+  --border: #d1d5db;
+  --ok-bg: #ecfdf5;
+  --ok-border: #10b981;
+  --err-bg: #fef2f2;
+  --err-border: #ef4444;
+  --req: #dc2626;
+  --alert-bg: #fff7ed;
+  --alert-border: #f97316;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(180deg, #f8fafc, var(--bg));
+  color: var(--text);
+}
+
+.container {
+  width: min(960px, 92vw);
+  margin: 36px auto;
+  display: grid;
+  gap: 16px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.subtitle {
+  margin: 6px 0 16px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* ── Mode switch ─────────────────────────────────── */
+.mode-switch {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.mode-switch label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+/* ── Generic label + input ───────────────────────── */
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+textarea,
+input[type="text"],
+input[type="email"],
+input[type="number"],
+input[type="file"] {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+  transition: border-color 0.15s;
+}
+
+textarea {
+  margin-bottom: 14px;
+}
+
+textarea:focus,
+input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* ── Buttons ─────────────────────────────────────── */
+button,
+.btn-confirm {
+  display: inline-block;
+  border: none;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fff;
+  padding: 11px 22px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+button:hover,
+.btn-confirm:hover {
+  background: var(--accent-dark);
+}
+
+.btn-secondary {
+  display: inline-block;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  padding: 10px 18px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-secondary:hover {
+  background: var(--bg);
+}
+
+/* ── Review header ───────────────────────────────── */
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* ── Review fields grid ──────────────────────────── */
+.fields-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px 24px;
+  margin: 20px 0 24px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.field-group.required label {
+  color: var(--text);
+}
+
+.req {
+  color: var(--req);
+  margin-left: 2px;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Alert box ───────────────────────────────────── */
+.alert {
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 0.92rem;
+}
+
+.alert.error {
+  background: var(--err-bg);
+  border: 1px solid var(--err-border);
+  color: #991b1b;
+}
+
+.alert ul {
+  margin: 6px 0 0 18px;
+  padding: 0;
+}
+
+/* ── Result card ─────────────────────────────────── */
+.result.ok {
+  background: var(--ok-bg);
+  border-color: var(--ok-border);
+}
+
+.result.error {
+  background: var(--err-bg);
+  border-color: var(--err-border);
+}
+
+.hidden {
+  display: none;
+}
+
+ul {
+  margin: 10px 0 0 20px;
+}

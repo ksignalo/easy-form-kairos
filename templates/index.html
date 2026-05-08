@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Candidate Intake Automation</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <main class="container">
+
+    {# ── STATE 1: Input form ────────────────────────────────── #}
+    {% if not review and not result %}
+    <section class="card">
+      <h1>Candidate Intake</h1>
+      <p class="subtitle">Paste candidate details or upload a resume to begin</p>
+
+      {% if error %}
+      <div class="alert error">
+        <strong>Error:</strong> {{ error }}
+        {% if details %}
+        <ul>{% for d in details %}<li>{{ d }}</li>{% endfor %}</ul>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <form action="/extract" method="post" enctype="multipart/form-data" id="intake-form">
+        <div class="mode-switch">
+          <label><input type="radio" name="mode" value="paste" checked /> Paste</label>
+          <label><input type="radio" name="mode" value="upload" /> Upload</label>
+        </div>
+
+        <div id="paste-section">
+          <label for="raw_text">Candidate Details</label>
+          <textarea id="raw_text" name="raw_text" rows="14"
+            placeholder="Paste full candidate details here..."></textarea>
+        </div>
+
+        <div id="upload-section" class="hidden">
+          <label for="resume_file">Resume File (PDF, DOC, DOCX)</label>
+          <input id="resume_file" name="resume_file" type="file" accept=".pdf,.doc,.docx" />
+        </div>
+
+        <button type="submit">Extract &amp; Review</button>
+      </form>
+    </section>
+    {% endif %}
+
+    {# ── STATE 2: Review / Edit form ────────────────────────── #}
+    {% if review %}
+    <section class="card">
+      <div class="review-header">
+        <div>
+          <h1>Review Extracted Data</h1>
+          <p class="subtitle">
+            Extracted by <strong>{{ provider }}</strong> — edit any field before submitting
+          </p>
+        </div>
+        <a href="/" class="btn-secondary">&#8592; Start Over</a>
+      </div>
+
+      {% if validation_errors %}
+      <div class="alert error">
+        <strong>Please fix these errors before submitting:</strong>
+        <ul>{% for e in validation_errors %}<li>{{ e }}</li>{% endfor %}</ul>
+      </div>
+      {% endif %}
+
+      <form action="/confirm" method="post" id="review-form">
+        <input type="hidden" name="provider" value="{{ provider }}" />
+        <input type="hidden" name="resume_temp_path" value="{{ resume_temp_path }}" />
+
+        <div class="fields-grid">
+          {# Required fields #}
+          <div class="field-group required">
+            <label for="r_name">Full Name <span class="req">*</span></label>
+            <input id="r_name" name="name" type="text"
+              value="{{ extracted.name }}" placeholder="e.g. Priya Sharma" required />
+          </div>
+
+          <div class="field-group required">
+            <label for="r_phone">Phone Number <span class="req">*</span></label>
+            <input id="r_phone" name="phoneNumber" type="text"
+              value="{{ extracted.phoneNumber }}" placeholder="e.g. 9876543210" required />
+          </div>
+
+          <div class="field-group required">
+            <label for="r_email">Email <span class="req">*</span></label>
+            <input id="r_email" name="email" type="email"
+              value="{{ extracted.email }}" placeholder="e.g. priya@example.com" required />
+          </div>
+
+          {# Optional fields #}
+          <div class="field-group">
+            <label for="r_org">Current Organisation</label>
+            <input id="r_org" name="currentOrganisation" type="text"
+              value="{{ extracted.currentOrganisation }}" />
+          </div>
+
+          <div class="field-group">
+            <label for="r_desig">Current Designation</label>
+            <input id="r_desig" name="currentDesignation" type="text"
+              value="{{ extracted.currentDesignation }}" />
+          </div>
+
+          <div class="field-group">
+            <label for="r_totalexp">Total Experience (years)</label>
+            <input id="r_totalexp" name="totalExperience" type="number" step="0.5" min="0"
+              value="{{ extracted.totalExperience }}" />
+          </div>
+
+          <div class="field-group">
+            <label for="r_jewexp">Jewellery Experience (years)</label>
+            <input id="r_jewexp" name="jewelleryExperience" type="number" step="0.5" min="0"
+              value="{{ extracted.jewelleryExperience }}" />
+          </div>
+
+          <div class="field-group">
+            <label for="r_inhand">Current In-hand Salary (₹)</label>
+            <input id="r_inhand" name="currentInhandSalary" type="number" min="0"
+              value="{{ extracted.currentInhandSalary }}" />
+          </div>
+
+          <div class="field-group">
+            <label for="r_expected">Expected Salary (₹)</label>
+            <input id="r_expected" name="expectedSalary" type="number" min="0"
+              value="{{ extracted.expectedSalary }}" />
+          </div>
+
+          <div class="field-group">
+            <label for="r_location">Preferred Location</label>
+            <input id="r_location" name="preferredLocation" type="text"
+              value="{{ extracted.preferredLocation }}" />
+          </div>
+
+          <div class="field-group">
+            <label for="r_address">Current Address</label>
+            <input id="r_address" name="currentAddress" type="text"
+              value="{{ extracted.currentAddress }}" />
+          </div>
+
+          <div class="field-group">
+            <label for="r_gender">Gender</label>
+            <input id="r_gender" name="gender" type="text"
+              value="{{ extracted.gender }}" placeholder="e.g. 1 or Male" />
+          </div>
+
+          <div class="field-group">
+            <label for="r_dob">Date of Birth</label>
+            <input id="r_dob" name="dob" type="text"
+              value="{{ extracted.dob }}" placeholder="e.g. 1995 (year only)" />
+          </div>
+
+          <div class="field-group">
+            <label for="r_tag">Tag</label>
+            <input id="r_tag" name="tag" type="text"
+              value="{{ extracted.tag }}" placeholder="e.g. 1" />
+          </div>
+        </div>
+
+        <div class="confirm-actions">
+          <button type="submit" class="btn-confirm">Confirm &amp; Submit</button>
+          <a href="/" class="btn-secondary">Start Over</a>
+        </div>
+      </form>
+    </section>
+    {% endif %}
+
+    {# ── STATE 3: Submission result ─────────────────────────── #}
+    {% if result %}
+    <section class="card result {{ 'ok' if result.ok else 'error' }}">
+      {% if result.ok %}
+        <h2>&#10003; Submitted Successfully</h2>
+        <p>{{ result.message }}</p>
+      {% else %}
+        <h2>Submission Failed</h2>
+        <p>{{ result.error }}</p>
+      {% endif %}
+
+      {% if result.provider %}
+      <p class="muted"><strong>Extractor:</strong> {{ result.provider }}</p>
+      {% endif %}
+
+      <div style="margin-top:14px">
+        <a href="/" class="btn-secondary">&#43; Add Another Candidate</a>
+      </div>
+    </section>
+    {% endif %}
+
+  </main>
+
+  <script>
+    const modeInputs = document.querySelectorAll('input[name="mode"]');
+    const pasteSection = document.getElementById('paste-section');
+    const uploadSection = document.getElementById('upload-section');
+
+    function toggleMode() {
+      const selected = document.querySelector('input[name="mode"]:checked');
+      if (!selected) return;
+      if (selected.value === 'upload') {
+        uploadSection && uploadSection.classList.remove('hidden');
+        pasteSection && pasteSection.classList.add('hidden');
+      } else {
+        pasteSection && pasteSection.classList.remove('hidden');
+        uploadSection && uploadSection.classList.add('hidden');
+      }
+    }
+
+    modeInputs.forEach((el) => el.addEventListener('change', toggleMode));
+    toggleMode();
+  </script>
+</body>
+</html>
